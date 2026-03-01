@@ -1,0 +1,130 @@
+create database MyFifthSSMSProject
+
+--analyzed The Data
+select * from customers100
+
+--analyzed The Data
+select * from BankChurners
+
+--i saw the Credit_Limit Had Long Messy Decimal Numbers Into Clean Numbers
+Select ROUND(Credit_Limit, 2) as Credit_Limit From BankChurners
+
+--here i rounded up each number into the closest number
+Select CEILING(Credit_Limit) As iRoundedUpEachNumberIntoTheClosetNumber From BankChurners
+
+
+--counted the total credit_limit for every customer Combined
+select count(Credit_Limit) from BankChurners 
+
+--I Saw Some NULL Values And Decided To Fill Them in
+Select ISNULL (Total_Amt_Chng_Q4_Q1, 0) As ISawNullValuesSoiDecidedToFillThemIn From BankChurners
+
+--stops the computer from crashing when dividing by 0
+Select Credit_Limit / NULLIF(Credit_Limit, 0) As StopsTheComputerFromCrashingWhenDividingBy0 From BankChurners
+
+--Picks The First Value That isnt Empty From A Specified Column
+Select Customer_Age, COALESCE(Customer_Age, 0) As PicksTheFirstValueThatIsntEmpty From BankChurners
+--makes everything in the specified Column Lower-Case
+Select LOWER(Attrition_Flag) As MakesAllTheDataInThisColumnLowerCase
+
+--checks how long ago a customer was subscribed
+Select DATEDIFF(day, subscription_date, GETDATE()) As ChecksHowLongAgoACustomerSubscribed From customers100
+
+--asks the computer "what time is it right now"
+SELECT GETDATE()
+
+--selects a small piece from the original piece of text
+Select SUBSTRING(Attrition_Flag, 1, 3) As PicksASmallPieceOfTextFromTheOriginalPieceOfText From BankChurners
+
+--turns dates into human style 
+Select CONVERT(VARCHAR, Subscription_Date, 101) As TurnsADateIntoHumanStyle From customers100
+
+--saves Any Changes Youve Made
+BEGIN TRANSACTION COMMIT;
+
+--undo any changes youve made
+BEGIN TRANSACTION ROLLBACK
+
+--needs matches from both tables to work 
+select 
+c.First_Name,
+c.Last_Name,
+b.Customer_Age
+From customers100 As c
+INNER JOIN BankChurners As B ON
+c.customer_id =
+b.CLIENTNUM;
+
+
+/* so here i made an example of how to fix a join command if it fails*/
+--the opposite of right join 
+SELECT
+c.first_name,
+c.company,
+b.Credit_Limit
+From customers100 As C
+left join BankChurners As B 
+ON TRY_CAST(c.First_Name AS float)
+= TRY_CAST(b.Credit_Limit As float);
+
+
+--selects everything from the right table and matches from the left table 
+select 
+c.First_Name,
+c.Country,
+b.Gender
+From customers100 As C
+Right join BankChurners As B 
+ON c.First_Name 
+=
+b.Gender
+
+--selects everything from both tables it doesnt matter if there is a match or not
+select
+c.First_Name,
+c.Email,
+b.Income_Category
+From customers100 As C 
+FULL JOIN BankChurners As B 
+ON C.First_Name 
+=
+b.Income_Category
+
+
+select * from customers100
+
+select * from BankChurners
+
+--changed the datatypes that i used for the inner join command so that the inner join works
+ALTER TABLE customers100
+ALTER COLUMN Customer_ID
+NVARCHAR(50);
+
+
+--changed the datatypes that i used for the inner join command so that the inner join works
+Alter table BankChurners
+Alter COLUMN CLIENTNUM
+NVARCHAR(50);
+
+
+--removed the pk constraint
+ALTER TABLE BankChurners
+DROP CONSTRAINT PK_BankChurners
+
+
+--checked the datatypes for the join commands
+SELECT COLUMN_NAME, DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'customers100'
+
+--checked the datatypes for the join ssssscommands
+SELECT COLUMN_NAME, DATA_TYPE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'BankChurners'
+
+/*tried to change the datatype to float
+Failed.
+so im gonna use a try_cast command and try to find the specific "Bad" Rows And Prevent The Crash*/
+ALTER TABLE customers100
+ALTER COLUMN First_Name
+FLOAT
